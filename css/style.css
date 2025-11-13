@@ -119,19 +119,35 @@ section {
 }
 
 .estudiante-card {
-    background-color: #e2e1e1;
-    text-align: center;
+    width: 150px;
+    height: 150px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
     padding: 10px;
-    border-bottom: 5px solid #b9b9b9;
-    border-right: 5px solid #b9b9b9;
-    border-radius: 10px;
-    transition: transform 0.4s ease, background-color 0.4s ease;
-    cursor: pointer;
+    text-align: center;
+    background-color: #f9f9f9;
+    transition: transform 0.3s, background-color 0.3s, color 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .estudiante-card:hover {
-    transform: scale(1.1) rotate(3deg);
+    transform: scale(1.05) rotate(5deg);
     background-color: #99c5dd;
+}
+
+.estudiante-card:hover .estudiante-foto {
+    transform: rotate(5deg);
+}
+
+.estudiante-foto {
+    width: 80px;
+    height: 80px;
+    border-radius: 5px;
+    object-fit: cover;
+    transition: transform 0.3s;
 }
 
 .estudiante-card:hover img {
