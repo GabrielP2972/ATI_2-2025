@@ -9,7 +9,10 @@
 </head>
 <body>
     <div class="perfil-container">
-        <img src="29951676.jpeg" alt="Foto de perfil" class="foto-perfil">
+        <picture>
+            <source media="(min-width: 769px)" srcset="29951676Grande.jpeg">
+            <img src="29951676Pequena.jpg" alt="Foto de perfil" class="foto-perfil">
+        </picture>
         <div class="info-perfil">
             <h1 class="nombre-titulo">Gabriel Alejandro Padilla Adames</h1>
             <p class="descripcion">
@@ -20,7 +23,7 @@
                 <li><span>Mi libro favorito es:</span>  Juego de Tronos</li>
                 <li><span>Mi estilo de música preferida:</span>  Regueton</li>
                 <li><span>Video juegos favoritos:</span> Yu-Gi-Oh!</li>
-                <li><span class="lenguajes">Lenguajes aprendidos: c++, java, python</span></li>
+                <li id= "lenguajes"><span>Lenguajes aprendidos:</span> c++, java, python</li>
             </ul>
             <p>
                 Si necesitan comunicarse conmigo me pueden escribir a: 
