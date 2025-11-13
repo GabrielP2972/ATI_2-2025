@@ -52,6 +52,11 @@ body {
     font-weight: bold;
 }
 
+span {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
 .email-link {
     color: orange;
 }
