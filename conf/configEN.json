@@ -12,5 +12,7 @@ const config = {
 	"lenguajes":"Languages learned",
 	"email":"please send me a email to [email], if you need to contact me",
 	"buscar": "Search",
-	"saludo": "Hi"
+	"saludo": "Hi",
+	"noResultados": "There are no students to show",
+	"noCoincidencias": "There are no students with this in their name: [query]"
 }

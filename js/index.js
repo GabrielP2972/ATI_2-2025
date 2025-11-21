@@ -131,16 +131,13 @@ function loadProfiles() {
 // Renderizar grid de estudiantes
 function renderStudentGrid(profiles) {
     const grid = document.getElementById('estudiantes-grid');
-    if (!grid) {
-        console.error('No se encontró el elemento estudiantes-grid');
-        return;
-    }
+    if (!grid) return;
     
     grid.innerHTML = '';
 
     if (profiles.length === 0) {
         const noResultsText = currentConfig.noResultados || 'No hay estudiantes para mostrar';
-        grid.innerHTML = `<p>${noResultsText}</p>`;
+        grid.innerHTML = `<p style="text-align: center; grid-column: 1 / -1;">${noResultsText}</p>`;
         return;
     }
 
@@ -193,13 +190,36 @@ function createStudentCard(profile) {
     return link;
 }
 
+// Realizar búsqueda
+function performSearch(query) {
+    const grid = document.getElementById('estudiantes-grid');
+    
+    if (!query.trim()) {
+        renderStudentGrid(allProfiles);
+        return;
+    }
+
+    const filtered = allProfiles.filter(profile =>
+        profile.nombre.toLowerCase().includes(query.toLowerCase())
+    );
+
+    if (filtered.length === 0) {
+        // Usar el mensaje de la configuración o uno por defecto
+        const noMatchText = currentConfig.noCoincidencias || 'No hay alumnos que tengan en su nombre: [query]';
+        const searchMessage = noMatchText.replace('[query]', query);
+        grid.innerHTML = `<p style="text-align: center; grid-column: 1 / -1;">${searchMessage}</p>`;
+    } else {
+        renderStudentGrid(filtered);
+    }
+}
+
 // Configurar event listeners
 function setupEventListeners() {
     const searchForm = document.getElementById('search-form');
-    const searchInput = document.getElementById('search-input');
+    const searchInput = document.getElementById('nombre');
 
     if (searchForm) {
-        searchForm.addEventListener('submit', function(e) {
+        searchForm.addEventListener('buscar', function(e) {
             e.preventDefault();
             if (searchInput) {
                 performSearch(searchInput.value);
@@ -208,8 +228,8 @@ function setupEventListeners() {
     }
 
     if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            performSearch(this.value);
+        searchInput.addEventListener('nombre', function(e) {
+            performSearch(e.target.value);
         });
     }
 }
