@@ -4,17 +4,78 @@ let currentPerfil = {};
 
 // Inicializar la aplicación
 function initApp() {
-    loadConfiguration();
+    loadConfiguration().then(() => {
+        loadPerfil();
+    }).catch(error => {
+        console.error('Error inicializando la aplicación:', error);
+        mostrarError('Error cargando la configuración');
+    });
 }
 
-// Cargar configuración desde JSON
+// Cargar configuración basada en el parámetro de idioma en la URL
 function loadConfiguration() {
-    if (typeof config !== 'undefined') {
-        currentConfig = config;
-        loadPerfil();
-    } else {
-        console.error('Configuración no cargada');
-    }
+    return new Promise((resolve, reject) => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const lang = urlParams.get('lang') || 'ES'; // Por defecto español
+        
+        const configFile = `conf/config${lang.toUpperCase()}.json`;
+        
+        // Eliminar configuraciones anteriores si existen
+        const existingConfig = document.querySelector('script[data-config]');
+        if (existingConfig) {
+            existingConfig.remove();
+        }
+        
+        // Cargar la configuración dinámicamente
+        const script = document.createElement('script');
+        script.src = configFile;
+        script.setAttribute('data-config', 'true');
+        
+        script.onload = function() {
+            if (typeof config !== 'undefined') {
+                currentConfig = config;
+                resolve();
+            } else {
+                reject(new Error('Configuración no definida'));
+            }
+        };
+        
+        script.onerror = function() {
+            console.error(`Error cargando configuración: ${configFile}`);
+            // Intentar cargar español por defecto si falla
+            if (lang !== 'ES') {
+                loadDefaultConfiguration().then(resolve).catch(reject);
+            } else {
+                reject(new Error('No se pudo cargar la configuración'));
+            }
+        };
+        
+        document.head.appendChild(script);
+    });
+}
+
+// Cargar configuración por defecto (español)
+function loadDefaultConfiguration() {
+    return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = '../conf/configES.json';
+        script.setAttribute('data-config', 'true');
+        
+        script.onload = function() {
+            if (typeof config !== 'undefined') {
+                currentConfig = config;
+                resolve();
+            } else {
+                reject(new Error('Configuración por defecto no disponible'));
+            }
+        };
+        
+        script.onerror = function() {
+            reject(new Error('No se pudo cargar la configuración por defecto'));
+        };
+        
+        document.head.appendChild(script);
+    });
 }
 
 // Cargar perfil basado en el CI de la URL
@@ -61,8 +122,8 @@ function renderPerfil() {
     
     if (currentPerfil.ci) {
         // Usar las imágenes del directorio del CI
-        fotoGrande.srcset = `${currentPerfil.ci}/${currentPerfil.ci}Grande.jpeg`;
-        fotoPequena.src = `${currentPerfil.ci}/${currentPerfil.ci}Pequena.jpg`;
+        fotoGrande.srcset = `${currentPerfil.ci}/${currentPerfil.ci}.jpg`;
+        fotoPequena.src = `${currentPerfil.ci}/${currentPerfil.ci}.jpg`;
         
         // Agregar manejo de errores para las imágenes
         fotoPequena.onerror = function() {

@@ -4,29 +4,80 @@ let allProfiles = [];
 
 // Inicializar la aplicación
 function initApp() {
-    loadConfiguration();
-    loadProfiles();
-    setupEventListeners();
+    loadConfiguration().then(() => {
+        loadProfiles();
+        setupEventListeners();
+    }).catch(error => {
+        console.error('Error inicializando la aplicación:', error);
+    });
 }
 
-// Cargar configuración desde JSON
+// Cargar configuración basada en el parámetro de idioma en la URL
 function loadConfiguration() {
-    if (typeof config !== 'undefined') {
-        currentConfig = config;
-        updateUITexts();
-    } else {
-        console.error('Configuración no cargada');
-    }
+    return new Promise((resolve, reject) => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const lang = urlParams.get('lang') || 'ES'; // Por defecto español
+        
+        const configFile = `conf/config${lang.toUpperCase()}.json`;
+        
+        // Eliminar configuraciones anteriores si existen
+        const existingConfig = document.querySelector('script[data-config]');
+        if (existingConfig) {
+            existingConfig.remove();
+        }
+        
+        // Cargar la configuración dinámicamente
+        const script = document.createElement('script');
+        script.src = configFile;
+        script.setAttribute('data-config', 'true');
+        
+        script.onload = function() {
+            if (typeof config !== 'undefined') {
+                currentConfig = config;
+                updateUITexts();
+                resolve();
+            } else {
+                reject(new Error('Configuración no definida'));
+            }
+        };
+        
+        script.onerror = function() {
+            console.error(`Error cargando configuración: ${configFile}`);
+            // Intentar cargar español por defecto si falla
+            if (lang !== 'ES') {
+                loadDefaultConfiguration().then(resolve).catch(reject);
+            } else {
+                reject(new Error('No se pudo cargar la configuración'));
+            }
+        };
+        
+        document.head.appendChild(script);
+    });
 }
 
-// Cargar perfiles desde JSON
-function loadProfiles() {
-    if (typeof perfiles !== 'undefined') {
-        allProfiles = perfiles;
-        renderStudentGrid(allProfiles);
-    } else {
-        console.error('Perfiles no cargados');
-    }
+// Cargar configuración por defecto (español)
+function loadDefaultConfiguration() {
+    return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'conf/configES.json';
+        script.setAttribute('data-config', 'true');
+        
+        script.onload = function() {
+            if (typeof config !== 'undefined') {
+                currentConfig = config;
+                updateUITexts();
+                resolve();
+            } else {
+                reject(new Error('Configuración por defecto no disponible'));
+            }
+        };
+        
+        script.onerror = function() {
+            reject(new Error('No se pudo cargar la configuración por defecto'));
+        };
+        
+        document.head.appendChild(script);
+    });
 }
 
 // Actualizar textos de la interfaz
@@ -43,13 +94,13 @@ function updateUITexts() {
     }
     
     // Actualizar placeholder de búsqueda
-    const searchInput = document.getElementById('search-input');
+    const searchInput = document.getElementById('nombre');
     if (searchInput && currentConfig.nombre) {
         searchInput.placeholder = currentConfig.nombre;
     }
     
     // Actualizar texto del botón de búsqueda
-    const searchButton = document.getElementById('search-button');
+    const searchButton = document.getElementById('buscar');
     if (searchButton && currentConfig.buscar) {
         searchButton.textContent = currentConfig.buscar;
     }
@@ -67,6 +118,16 @@ function updateUITexts() {
     }
 }
 
+// Cargar perfiles desde JSON
+function loadProfiles() {
+    if (typeof perfiles !== 'undefined') {
+        allProfiles = perfiles;
+        renderStudentGrid(allProfiles);
+    } else {
+        console.error('Perfiles no cargados');
+    }
+}
+
 // Renderizar grid de estudiantes
 function renderStudentGrid(profiles) {
     const grid = document.getElementById('estudiantes-grid');
@@ -78,7 +139,8 @@ function renderStudentGrid(profiles) {
     grid.innerHTML = '';
 
     if (profiles.length === 0) {
-        grid.innerHTML = '<p>No hay estudiantes para mostrar</p>';
+        const noResultsText = currentConfig.noResultados || 'No hay estudiantes para mostrar';
+        grid.innerHTML = `<p>${noResultsText}</p>`;
         return;
     }
 
@@ -91,7 +153,13 @@ function renderStudentGrid(profiles) {
 // Crear tarjeta de estudiante
 function createStudentCard(profile) {
     const link = document.createElement('a');
-    link.href = `perfil.html?ci=${profile.ci}`;
+    
+    // Obtener el idioma actual de la URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const lang = urlParams.get('lang') || 'ES';
+    
+    // Incluir el parámetro de idioma en el enlace al perfil
+    link.href = `perfil.html?ci=${profile.ci}&lang=${lang}`;
     link.target = '_blank';
     link.style.textDecoration = 'none';
     link.style.color = 'inherit';
@@ -144,20 +212,6 @@ function setupEventListeners() {
             performSearch(this.value);
         });
     }
-}
-
-// Realizar búsqueda
-function performSearch(query) {
-    if (!query.trim()) {
-        renderStudentGrid(allProfiles);
-        return;
-    }
-
-    const filtered = allProfiles.filter(profile =>
-        profile.nombre.toLowerCase().includes(query.toLowerCase())
-    );
-
-    renderStudentGrid(filtered);
 }
 
 // Inicializar cuando el DOM esté listo
