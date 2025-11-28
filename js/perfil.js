@@ -144,33 +144,33 @@ function renderPerfil() {
     }
 
     // Actualizar los datos de la lista usando la configuración para los textos
-    const color = document.getElementById('color');
+     const color = document.getElementById('color');
     if (color && currentPerfil.color) {
-        color.textContent = `${currentConfig.color || 'Mi color favorito es'}: ${currentPerfil.color}`;
+        color.textContent = currentPerfil.color;
     }
 
     const libro = document.getElementById('libro');
     if (libro && currentPerfil.libro) {
         const libros = Array.isArray(currentPerfil.libro) ? currentPerfil.libro.join(', ') : currentPerfil.libro;
-        libro.textContent = `${currentConfig.libro || 'Mi libro favorito es'}: ${libros}`;
+        libro.textContent = libros;
     }
 
     const musica = document.getElementById('musica');
     if (musica && currentPerfil.musica) {
         const musicas = Array.isArray(currentPerfil.musica) ? currentPerfil.musica.join(', ') : currentPerfil.musica;
-        musica.textContent = `${currentConfig.musica || 'Mi estilo de música preferida'}: ${musicas}`;
+        musica.textContent = musicas;
     }
 
     const videoJuego = document.getElementById('video-juego');
     if (videoJuego && currentPerfil.video_juego) {
         const videoJuegos = Array.isArray(currentPerfil.video_juego) ? currentPerfil.video_juego.join(', ') : currentPerfil.video_juego;
-        videoJuego.textContent = `${currentConfig.video_juego || 'Video juegos favoritos'}: ${videoJuegos}`;
+        videoJuego.textContent = videoJuegos;
     }
 
     const lenguajes = document.getElementById('lenguajes');
     if (lenguajes && currentPerfil.lenguajes) {
         const lenguajesLista = Array.isArray(currentPerfil.lenguajes) ? currentPerfil.lenguajes.join(', ') : currentPerfil.lenguajes;
-        lenguajes.textContent = `${currentConfig.lenguajes || 'Lenguajes aprendidos'}: ${lenguajesLista}`;
+        lenguajes.textContent = lenguajesLista;
     }
 
     // Actualizar el email
