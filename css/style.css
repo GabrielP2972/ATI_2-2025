@@ -79,7 +79,6 @@ body {
     font-weight: normal;
 }
 
-/* Último elemento en negritas */
 #lenguajes-item span:last-child {
     font-weight: bold !important;
 }
@@ -118,7 +117,7 @@ nav ul {
     margin: 0;
 }
 
-.nav-brand {
+#nav-brand {
     font-size: 24px;
 }
 

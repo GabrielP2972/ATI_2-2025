@@ -4,6 +4,11 @@ let allProfiles = [];
 
 // Inicializar la aplicación
 function initApp() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (!urlParams.has('lang')) {
+        urlParams.set('lang', 'ES');
+        window.history.replaceState({}, '', `${window.location.pathname}?${urlParams}`);
+    }
     loadConfiguration().then(() => {
         loadProfiles();
         setupEventListeners();
@@ -157,7 +162,7 @@ function createStudentCard(profile) {
     
     // Incluir el parámetro de idioma en el enlace al perfil
     link.href = `perfil.html?ci=${profile.ci}&lang=${lang}`;
-    link.target = '_blank';
+    link.target = '_self';
     link.style.textDecoration = 'none';
     link.style.color = 'inherit';
 
@@ -219,7 +224,7 @@ function setupEventListeners() {
     const searchInput = document.getElementById('nombre');
 
     if (searchForm) {
-        searchForm.addEventListener('buscar', function(e) {
+        searchForm.addEventListener('submit', function(e) {
             e.preventDefault();
             if (searchInput) {
                 performSearch(searchInput.value);

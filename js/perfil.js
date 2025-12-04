@@ -174,15 +174,18 @@ function renderPerfil() {
     }
 
     // Actualizar el email
+    const emailLabel = document.getElementById('email-label');
     const emailLink = document.getElementById('email-link');
-    if (emailLink && currentPerfil.email) {
-        emailLink.href = `mailto:${currentPerfil.email}`;
-        
-        // Formatear el texto del email usando la configuración
-        const emailText = currentConfig.email ? 
-            currentConfig.email.replace('[email]', currentPerfil.email) : 
-            currentPerfil.email;
-        emailLink.textContent = emailText;
+
+    if (emailLabel && emailLink && currentPerfil.email) {
+        if (currentConfig.email) {
+            const emailParts = currentConfig.email.split('[email]');
+            if (emailParts.length === 2) {
+                emailLabel.textContent = emailParts[0];
+                emailLink.textContent = currentPerfil.email;
+                emailLink.href = `mailto:${currentPerfil.email}`;
+            }
+        }
     }
 }
 
