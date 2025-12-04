@@ -1,193 +1,152 @@
-// Configuración global para perfil
+// Variable global para manejar el perfil
 let currentConfig = {};
 let currentPerfil = {};
 
-// Inicializar la aplicación
-function initApp() {
-    loadConfiguration().then(() => {
-        loadPerfil();
-    }).catch(error => {
-        console.error('Error inicializando la aplicación:', error);
-        mostrarError('Error cargando la configuración');
-    });
-}
+// Inicializar cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', function() {
+    initPerfilApp();
+});
 
-// Cargar configuración basada en el parámetro de idioma en la URL
-function loadConfiguration() {
-    return new Promise((resolve, reject) => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const lang = urlParams.get('lang') || 'ES'; // Por defecto español
-        
-        const configFile = `conf/config${lang.toUpperCase()}.json`;
-        
-        // Eliminar configuraciones anteriores si existen
-        const existingConfig = document.querySelector('script[data-config]');
-        if (existingConfig) {
-            existingConfig.remove();
-        }
-        
-        // Cargar la configuración dinámicamente
-        const script = document.createElement('script');
-        script.src = configFile;
-        script.setAttribute('data-config', 'true');
-        
-        script.onload = function() {
-            if (typeof config !== 'undefined') {
-                currentConfig = config;
-                resolve();
-            } else {
-                reject(new Error('Configuración no definida'));
-            }
+function initPerfilApp() {
+    // Las variables 'config' y 'perfil' ya están cargadas síncronamente desde el HTML
+    if (typeof config !== 'undefined') {
+        currentConfig = config;
+    } else {
+        console.error('Configuración no cargada');
+        // Configuración por defecto
+        currentConfig = {
+            email: "Si necesitan comunicarse conmigo me pueden escribir a [email]"
         };
-        
-        script.onerror = function() {
-            console.error(`Error cargando configuración: ${configFile}`);
-            // Intentar cargar español por defecto si falla
-            if (lang !== 'ES') {
-                loadDefaultConfiguration().then(resolve).catch(reject);
-            } else {
-                reject(new Error('No se pudo cargar la configuración'));
-            }
-        };
-        
-        document.head.appendChild(script);
-    });
-}
-
-// Cargar configuración por defecto (español)
-function loadDefaultConfiguration() {
-    return new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = '../conf/configES.json';
-        script.setAttribute('data-config', 'true');
-        
-        script.onload = function() {
-            if (typeof config !== 'undefined') {
-                currentConfig = config;
-                resolve();
-            } else {
-                reject(new Error('Configuración por defecto no disponible'));
-            }
-        };
-        
-        script.onerror = function() {
-            reject(new Error('No se pudo cargar la configuración por defecto'));
-        };
-        
-        document.head.appendChild(script);
-    });
-}
-
-// Cargar perfil basado en el CI de la URL
-function loadPerfil() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const ci = urlParams.get('ci');
+    }
     
-    if (!ci) {
-        console.error('No se proporcionó CI en la URL');
-        mostrarError('No se especificó un perfil');
+    if (typeof perfil !== 'undefined') {
+        currentPerfil = perfil;
+    } else {
+        console.error('Perfil no cargado');
+        showError('Error cargando el perfil');
         return;
     }
-
-    // Cargar el archivo JSON del perfil
-    const script = document.createElement('script');
-    script.src = `${ci}/perfil.json`;
-    script.onload = function() {
-        if (typeof perfil !== 'undefined') {
-            currentPerfil = perfil;
-            renderPerfil();
-        } else {
-            console.error('Perfil no cargado');
-            mostrarError('Error al cargar el perfil');
-        }
-    };
-    script.onerror = function() {
-        console.error('Error al cargar el perfil');
-        mostrarError('No se pudo cargar el perfil solicitado');
-    };
-    document.head.appendChild(script);
+    
+    renderPerfil();
 }
 
-// Mostrar mensaje de error
-function mostrarError(mensaje) {
-    const container = document.querySelector('.perfil-container');
-    container.innerHTML = `<p style="color: red; text-align: center;">${mensaje}</p>`;
-}
-
-// Renderizar el perfil en el DOM
 function renderPerfil() {
-    // Actualizar las fotos
-    const fotoGrande = document.getElementById('foto-grande');
+    // Foto de perfil
     const fotoPequena = document.getElementById('foto-pequena');
+    const fotoGrande = document.getElementById('foto-grande');
     
     if (currentPerfil.ci) {
-        // Usar las imágenes del directorio del CI
-        fotoGrande.srcset = `${currentPerfil.ci}/${currentPerfil.ci}.jpg`;
-        fotoPequena.src = `${currentPerfil.ci}/${currentPerfil.ci}.jpg`;
+        const imgPath = `${currentPerfil.ci}/${currentPerfil.ci}.jpg`;
+        if (fotoPequena) fotoPequena.src = imgPath;
+        if (fotoGrande) fotoGrande.srcset = imgPath;
         
-        // Agregar manejo de errores para las imágenes
-        fotoPequena.onerror = function() {
-            this.src = 'default.jpg';
-        };
+        // Manejo de error en imagen
+        if (fotoPequena) {
+            fotoPequena.onerror = function() {
+                this.src = 'default.jpg';
+            };
+        }
     }
-
-    // Actualizar el nombre
+    
+    // Nombre
     const nombreTitulo = document.getElementById('nombre-titulo');
     if (nombreTitulo && currentPerfil.nombre) {
         nombreTitulo.textContent = currentPerfil.nombre;
     }
-
-    // Actualizar la descripción
+    
+    // Descripción
     const descripcion = document.getElementById('descripcion');
     if (descripcion && currentPerfil.descripcion) {
         descripcion.textContent = currentPerfil.descripcion;
     }
+    
+    // Lista de datos
+    renderListData();
+    
+    // Email - SOLO el email es enlace
+    renderEmailCorrected();
+}
 
-    // Actualizar los datos de la lista usando la configuración para los textos
-     const color = document.getElementById('color');
+function renderListData() {
+    // Color
+    const color = document.getElementById('color');
     if (color && currentPerfil.color) {
         color.textContent = currentPerfil.color;
     }
-
+    
+    // Libro
     const libro = document.getElementById('libro');
     if (libro && currentPerfil.libro) {
         const libros = Array.isArray(currentPerfil.libro) ? currentPerfil.libro.join(', ') : currentPerfil.libro;
         libro.textContent = libros;
     }
-
+    
+    // Música
     const musica = document.getElementById('musica');
     if (musica && currentPerfil.musica) {
         const musicas = Array.isArray(currentPerfil.musica) ? currentPerfil.musica.join(', ') : currentPerfil.musica;
         musica.textContent = musicas;
     }
-
+    
+    // Videojuegos
     const videoJuego = document.getElementById('video-juego');
     if (videoJuego && currentPerfil.video_juego) {
         const videoJuegos = Array.isArray(currentPerfil.video_juego) ? currentPerfil.video_juego.join(', ') : currentPerfil.video_juego;
         videoJuego.textContent = videoJuegos;
     }
-
+    
+    // Lenguajes
     const lenguajes = document.getElementById('lenguajes');
     if (lenguajes && currentPerfil.lenguajes) {
         const lenguajesLista = Array.isArray(currentPerfil.lenguajes) ? currentPerfil.lenguajes.join(', ') : currentPerfil.lenguajes;
         lenguajes.textContent = lenguajesLista;
     }
+}
 
-    // Actualizar el email
-    const emailLabel = document.getElementById('email-label');
-    const emailLink = document.getElementById('email-link');
-
-    if (emailLabel && emailLink && currentPerfil.email) {
-        if (currentConfig.email) {
-            const emailParts = currentConfig.email.split('[email]');
-            if (emailParts.length === 2) {
-                emailLabel.textContent = emailParts[0];
-                emailLink.textContent = currentPerfil.email;
-                emailLink.href = `mailto:${currentPerfil.email}`;
-            }
+function renderEmailCorrected() {
+    const emailContainer = document.getElementById('email-container');
+    if (!emailContainer || !currentPerfil.email) return;
+    
+    // Limpiar el contenedor
+    emailContainer.innerHTML = '';
+    
+    if (currentConfig.email) {
+        const emailText = currentConfig.email;
+        const emailParts = emailText.split('[email]');
+        
+        // Parte 1: Texto antes del email
+        if (emailParts[0] && emailParts[0].trim()) {
+            const textSpan = document.createElement('span');
+            textSpan.textContent = emailParts[0];
+            emailContainer.appendChild(textSpan);
         }
+        
+        // Parte 2: El email como enlace
+        const emailLink = document.createElement('a');
+        emailLink.href = `mailto:${currentPerfil.email}`;
+        emailLink.className = 'email-link';
+        emailLink.textContent = currentPerfil.email;
+        emailContainer.appendChild(emailLink);
+        
+        // Parte 3: Texto después del email (si existe)
+        if (emailParts[1] && emailParts[1].trim()) {
+            const afterSpan = document.createElement('span');
+            afterSpan.textContent = emailParts[1];
+            emailContainer.appendChild(afterSpan);
+        }
+    } else {
+        // Fallback si no hay configuración
+        const emailLink = document.createElement('a');
+        emailLink.href = `mailto:${currentPerfil.email}`;
+        emailLink.className = 'email-link';
+        emailLink.textContent = currentPerfil.email;
+        emailContainer.appendChild(emailLink);
     }
 }
 
-// Inicializar cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', initApp);
+function showError(message) {
+    const container = document.querySelector('.perfil-container');
+    if (container) {
+        container.innerHTML = `<p style="color: red; text-align: center; padding: 20px;">${message}</p>`;
+    }
+}

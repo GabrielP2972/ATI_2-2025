@@ -6,8 +6,25 @@
     <link rel="icon" href="29951676/favicon.ico">
     <title>ATI[UCV] 2025-2</title>
     <link rel="stylesheet" href="css/style.css">
-    <script type="text/javascript" src="datos/index.json" defer></script>
-    <script type="text/javascript" src="js/index.js" defer></script>
+    
+    <!-- Script para cargar JSON síncronamente -->
+    <script>
+        // Obtener idioma de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const lang = urlParams.get('lang') || 'ES';
+        
+        // Determinar archivos
+        const configFile = `conf/config${lang.toUpperCase()}.json`;
+        
+        // Cargar configuración síncrona
+        document.write('<script src="' + configFile + '"><\/script>');
+        
+        // Cargar perfiles síncrona
+        document.write('<script src="datos/index.json"><\/script>');
+    </script>
+    
+    <!-- Ahora nuestro JS que ya tendrá las variables -->
+    <script type="text/javascript" src="js/index.js"></script>
 </head>
 <body>
     <header>
@@ -34,7 +51,7 @@
     </section>
     
     <footer>
-        <p id="copyright"></p>
+        <p id="copyRight"></p>
     </footer>
 </body>
 </html>

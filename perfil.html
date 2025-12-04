@@ -6,7 +6,22 @@
     <link rel="icon" href="29951676/favicon.ico">
     <title>ATI[UCV] 2025-2</title>
     <link rel="stylesheet" href="css/style.css">
-    <script type="text/javascript" src="js/perfil.js" defer></script>
+    <script>
+        // Obtener parámetros de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const ci = urlParams.get('ci') || '29951676';
+        const lang = urlParams.get('lang') || 'ES';
+        
+        // Determinar archivos a cargar
+        const configFile = `conf/config${lang.toUpperCase()}.json`;
+        const perfilFile = `${ci}/perfil.json`;
+        
+        document.write('<script src="' + configFile + '"><\/script>');
+        
+        document.write('<script src="' + perfilFile + '"><\/script>');
+    </script>
+    
+    <script type="text/javascript" src="js/perfil.js"></script>
 </head>
 <body>
     <div class="perfil-container">
@@ -39,10 +54,7 @@
                     <span id="lenguajes"></span>
                 </li>
             </ul>
-            <p id="email-container">
-                <span id="email-label"></span>
-                <a href="mailto:" class="email-link" id="email-link"></a>
-            </p>
+            <p id="email-container"></p>
         </div>
     </div>
 </body>
