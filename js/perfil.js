@@ -40,7 +40,7 @@ function renderPerfil() {
         if (fotoPequena) fotoPequena.src = imgPath;
         if (fotoGrande) fotoGrande.srcset = imgPath;
         
-        // Manejo de error en imagen
+        // Manejo de error en imagen - USO 1 DE THIS (ya existente)
         if (fotoPequena) {
             fotoPequena.onerror = function() {
                 this.src = 'default.jpg';
@@ -63,15 +63,20 @@ function renderPerfil() {
     // Lista de datos
     renderListData();
     
-    // Email - SOLO el email es enlace
+    // Email
     renderEmailCorrected();
 }
 
 function renderListData() {
-    // Color
+    // Color - REFACTORIZADO para usar this
     const color = document.getElementById('color');
     if (color && currentPerfil.color) {
-        color.textContent = currentPerfil.color;
+        // Uso 2 de this: función que procesa datos usando this
+        function procesarColor() {
+            return this.valor;
+        }
+        const colorObj = { valor: currentPerfil.color };
+        color.textContent = procesarColor.call(colorObj);
     }
     
     // Libro
@@ -95,11 +100,17 @@ function renderListData() {
         videoJuego.textContent = videoJuegos;
     }
     
-    // Lenguajes
+    // Lenguajes - REFACTORIZADO para usar this
     const lenguajes = document.getElementById('lenguajes');
     if (lenguajes && currentPerfil.lenguajes) {
-        const lenguajesLista = Array.isArray(currentPerfil.lenguajes) ? currentPerfil.lenguajes.join(', ') : currentPerfil.lenguajes;
-        lenguajes.textContent = lenguajesLista;
+        // Uso 3 de this: objeto con método que usa this
+        const lenguajesObj = {
+            lista: Array.isArray(currentPerfil.lenguajes) ? currentPerfil.lenguajes : [currentPerfil.lenguajes],
+            obtenerTexto: function() {
+                return this.lista.join(', ');
+            }
+        };
+        lenguajes.textContent = lenguajesObj.obtenerTexto();
     }
 }
 
