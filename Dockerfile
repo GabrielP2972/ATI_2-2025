@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean
 
 # Clonar el repositorio de GitHub
+RUN rm -rf /var/www/html
 RUN git clone https://github.com/GabrielP2972/ATI_2-2025.git /var/www/html
 
 # Verificar que index.py existe (el archivo principal)
@@ -39,6 +40,10 @@ RUN echo '<VirtualHost *:80>\n\
 
 # Habilitar wsgi y reiniciar configuración
 RUN a2enmod wsgi
+
+# Ajustar permisos para que Apache pueda leer los archivos
+RUN chown -rw www-data:www-data /var/www/html
+RUN chmod -R 755 /var/www/html
 
 # Puerto 80
 EXPOSE 80

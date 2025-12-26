@@ -2,7 +2,7 @@
 import sys
 sys.path.insert(0, "/var/www/html")
 
-# Importar tu aplicación principal
+# Importar aplicación principal
 from app import application
 
 # Esto es necesario para WSGI
