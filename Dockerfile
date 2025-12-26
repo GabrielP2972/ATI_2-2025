@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:latest
 
 # Instalar lo mínimo necesario
 RUN apt-get update && apt-get install -y \
@@ -42,7 +42,7 @@ RUN echo '<VirtualHost *:80>\n\
 RUN a2enmod wsgi
 
 # Ajustar permisos para que Apache pueda leer los archivos
-RUN chown -rw www-data:www-data /var/www/html
+RUN chown -R www-data:www-data /var/www/html
 RUN chmod -R 755 /var/www/html
 
 # Puerto 80
