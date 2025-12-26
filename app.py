@@ -182,7 +182,7 @@ def application(environ, start_response):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ATI[UCV] 2025-2 - SPA</title>
+    <title>ATI[UCV] 2025-2</title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="icon" href="/static/favicon.ico">
 </head>

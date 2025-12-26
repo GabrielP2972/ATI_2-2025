@@ -24,7 +24,7 @@ function getCookie(name) {
 // Funciones para API
 async function fetchConfig(lang) {
     try {
-        const response = await fetch(`/api/config/${lang}`);
+        const response = await fetch(`/ATI/api/config/${lang}`);
         if (response.ok) {
             return await response.json();
         }
@@ -36,7 +36,7 @@ async function fetchConfig(lang) {
 
 async function fetchEstudiantes() {
     try {
-        const response = await fetch('/api/estudiantes');
+        const response = await fetch('/ATI/api/estudiantes');
         if (response.ok) {
             return await response.json();
         }
@@ -48,7 +48,7 @@ async function fetchEstudiantes() {
 
 async function fetchPerfil(ci) {
     try {
-        const response = await fetch(`/api/perfil/${ci}`);
+        const response = await fetch(`/ATI/api/perfil/${ci}`);
         if (response.ok) {
             return await response.json();
         }
@@ -60,7 +60,7 @@ async function fetchPerfil(ci) {
 
 async function setLanguage(lang) {
     try {
-        const response = await fetch('/api/set_lang', {
+        const response = await fetch('/ATI/api/set_lang', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -144,7 +144,7 @@ function renderStudentGrid(profiles) {
         img.alt = profile.nombre;
         img.className = 'estudiante-foto';
         img.onerror = function() {
-            this.src = '/static/default.jpg';
+            this.src = '/ATI/static/default.jpg';
         };
         
         const name = document.createElement('p');
@@ -185,9 +185,9 @@ const perfilHTML = `
     <button id="back-button" class="back-button">← ${currentConfig.home || 'Volver'}</button>
     <div class="perfil-container">    
         <picture>
-            <source media="(min-width: 769px)" srcset="/perfiles/${perfil.ci}/${perfil.ci}.jpg">
-            <img src="/perfiles/${perfil.ci}/${perfil.ci}.jpg" alt="Foto de perfil" class="foto-perfil" 
-                 onerror="this.src='/static/default.jpg'">
+            <source media="(min-width: 769px)" srcset="/ATI/perfiles/${perfil.ci}/${perfil.ci}.jpg">
+            <img src="/ATI/perfiles/${perfil.ci}/${perfil.ci}.jpg" alt="Foto de perfil" class="foto-perfil" 
+                 onerror="this.src='/ATI/static/default.jpg'">
         </picture>
         <div class="info-perfil">
             <h1 class="nombre-titulo">${perfil.nombre || ''}</h1>

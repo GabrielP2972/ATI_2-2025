@@ -1,13 +1,15 @@
-FROM ubuntu:22.04
+FROM ubuntu:latest
 
 # Instalar lo mínimo necesario
 RUN apt-get update && apt-get install -y \
     apache2 \
     python3 \
     libapache2-mod-wsgi-py3 \
+    git \
     && apt-get clean
 
 # Clonar el repositorio de GitHub
+RUN rm -rf /var/www/html
 RUN git clone https://github.com/GabrielP2972/ATI_2-2025.git /var/www/html
 
 # Verificar que index.py existe (el archivo principal)
@@ -38,6 +40,10 @@ RUN echo '<VirtualHost *:80>\n\
 
 # Habilitar wsgi y reiniciar configuración
 RUN a2enmod wsgi
+
+# Ajustar permisos para que Apache pueda leer los archivos
+RUN chown -R www-data:www-data /var/www/html
+RUN chmod -R 755 /var/www/html
 
 # Puerto 80
 EXPOSE 80
