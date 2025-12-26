@@ -5,6 +5,7 @@ RUN apt-get update && apt-get install -y \
     apache2 \
     python3 \
     libapache2-mod-wsgi-py3 \
+    git \
     && apt-get clean
 
 # Clonar el repositorio de GitHub
